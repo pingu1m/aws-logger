@@ -1,0 +1,45 @@
+aws rds create-db-cluster --db-cluster-identifier my-serverless-cluster --master-username mymasteruser \
+--master-user-password mymasterpassword --engine aurora --engine-mode serverless \
+--region us-east-1
+
+//Select * query from Aurora Serverless (w/ Data API enabled) using the "execute-sql" API
+aws rds-data execute-sql --db-cluster-or-instance-arn "arn:aws:rds:us-east-1:xxxxxxxxxxxx:cluster:my-serverless-cluster" --schema "" \
+--database "MarketPlace" --aws-secret-store-arn "arn:aws:secretsmanager:us-east-1:xxxxxxxxxxxx:secret:RDSAuroraServerlessMasterSecret-3haLhV" \
+--sql-statements "select * from Customers" --region us-east-1 \
+--endpoint-url https://rds-data.us-east-1.amazonaws.com
+
+
+
+
+git clone https://github.com/CodeRecipe-dev/LambdaToAuroraNoVPC
+
+Deploy to the cloud
+
+cd LambdaToAuroraNoVPCauroraCrud
+
+npm install serverless
+pip install -r requirements.txt
+
+serverless deploy --stage <stage-name> --dbUser <db-user-name>
+
+Create DB - Must be done before using app
+
+sls invoke -f AuroraCRUD -d '{"body":{"eventType":"createTable"}}' -l --stage <stage-name> --dbUser <db-user-name>
+
+CRUD Operations
+
+sls invoke -f AuroraCRUD -d '{"body":{"eventType":"saveRecord", "recordInfo": {"record_id": 1, "data": "hello"}}}' -l --stage <stage-name> --dbUser <db-user-name>
+
+sls invoke -f AuroraCRUD -d '{"body":{"eventType":"getRecords"}}' -l --stage <stage-name> --dbUser <db-user-name>
+
+sls invoke -f AuroraCRUD -d '{"body":{"eventType":"updateRecord", "recordInfo": {"record_id": 1, "data": "world"}}}' -l --stage <stage-name> --dbUser <db-user-name>
+
+Removal
+
+To remove the stack, run the following command:
+
+serverless remove
+
+
+https://www.linkedin.com/pulse/using-apis-access-sql-database-aws-serverless-aurora-sharma/
+
