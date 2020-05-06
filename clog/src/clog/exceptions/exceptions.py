@@ -1,0 +1,2 @@
+class ConfigNotSetException(Exception):
+    pass
