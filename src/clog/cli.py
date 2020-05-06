@@ -1,6 +1,5 @@
 import argparse
 import sys
-
 from clog import clog
 
 
@@ -16,13 +15,19 @@ def create_parser():
 
 
 def main():
-    args = create_parser().parse_args()
+    parser = create_parser()
+    args = parser.parse_args()
 
-    if not args.text and not sys.stdin.isatty() and args.command == 'put':
-        input_stream = sys.stdin
-        for line in input_stream:
-            args.text = line
+    if args.command:
+        if args.command == 'put' and not args.text and not sys.stdin.isatty():
+            input_stream = sys.stdin
+            for line in input_stream:
+                args.text = line
+                args.func(args)
+                # print(line, end='')
+        else:
             args.func(args)
-            # print(line, end='')
     else:
-        args.func(args)
+        parser.print_help()
+        sys.exit(2)
+
